@@ -19,9 +19,6 @@ import SitesMapPage from 'containers/SitesMapPage/Loadable';
 import Solutions from 'containers/Solutions/Loadable';
 import Header from 'components/Header';
 import Footer from 'components/Footer';
-import createHistory from 'history/createBrowserHistory';
-
-const history = createHistory();
 
 const AppWrapper = styled.div`
 

@@ -1,18 +1,21 @@
-
 import {
-  defaultAction,
-} from '../actions';
-import {
-  DEFAULT_ACTION,
+  CHANGE_USERNAME,
 } from '../constants';
 
-describe('Solutions actions', () => {
-  describe('Default Action', () => {
-    it('has a type of DEFAULT_ACTION', () => {
-      const expected = {
-        type: DEFAULT_ACTION,
+import {
+  changeUsername,
+} from '../actions';
+
+describe('Home Actions', () => {
+  describe('changeUsername', () => {
+    it('should return the correct type and the passed name', () => {
+      const fixture = 'Max';
+      const expectedResult = {
+        type: CHANGE_USERNAME,
+        name: fixture,
       };
-      expect(defaultAction()).toEqual(expected);
+
+      expect(changeUsername(fixture)).toEqual(expectedResult);
     });
   });
 });

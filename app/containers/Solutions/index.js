@@ -1,104 +1,154 @@
-/**
+/*
+ * HomePage
  *
- * Solutions
- *
+ * This is the first thing users see of our App, at the '/' route
  */
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { FormattedMessage } from 'react-intl';
-import { createStructuredSelector } from 'reselect';
+import { connect } from 'react-redux';
 import { compose } from 'redux';
+import { createStructuredSelector } from 'reselect';
 
-import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
-import makeSelectSolutions from './selectors';
+import injectSaga from 'utils/injectSaga';
+
+import { changeUsername, sitesAction,solutionAction } from './actions';
+import { makeSelectSites, makeCity, makeSolutionParam } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
-import messages from './messages';
-
-import SiteMapBox2 from 'components/SiteMapBox2'; 
 
 import { Grid, Row, Col, Panel, ListGroup, ListGroupItem } from 'react-bootstrap';
 import { grid, row } from 'bootstrap-css';
-
+import SiteMapBox2 from 'components/SiteMapBox2';
+import Img from 'components/Img';
 
 export class Solutions extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
-  
-  constructor(props){
+  /**
+   * when initial state username is not null, submit the form to load repos
+   */
+
+   constructor(props,context){
     super(props);
+    this.router = context.router;
+
+    // console.log("this.router",this.router);
+    let search = "";
+    if(this.router && this.router.route && this.router.route.location && this.router.route.location.search){
+       search = this.router.route.location.search;
+    }
+
+
+    const searchCityMatch = search.match(/city=([a-zA-Z0-9]+)/);
+    const searchDateMatch = search.match(/date=([_0-9]+)/);
+    const searchStypeMatch = search.match(/stype=([0-9]+)/);
+    const city = searchCityMatch && searchCityMatch[1] ? searchCityMatch[1] : null;
+    const date = searchDateMatch && searchDateMatch[1] ? searchDateMatch[1] : null;
+    const stype = searchStypeMatch && searchStypeMatch[1] ? searchStypeMatch[1] : null;
+    // console.log("this.city",this.city);
     this.showSolutionDetail = this.showSolutionDetail.bind(this);
     this.solutionOne = Symbol("solutionOne");
     this.solutionTwo = Symbol("solutionTwo");
     this.state = {
+      city,
       detailShow: this.solutionOne,
-       detailContent1: 'xsdffsdfsdfsdfsdfsfsdfsdffsdfsdfsdfsdfsdf',
-      detailContent2: '44444444444444444422222222222222222',
+      date,
+      stype,
     }
+   }
+  componentDidMount() {
+    const { city, date, stype } = this.state;
+    this.props.onloadSites(city);
+    this.props.onloadSolution({date,stype});
   }
-    
-  showSolutionDetail(solution){
+
+  showSolutionDetail(type){
     this.setState({
-      detailShow: solution,
+      detailShow: type
     });
   }
 
   render() {
-    console.log("this.state",this.state)
-    const { detailShow, detailContent1, detailContent2 } = this.state;
+    const { sites, solution } = this.props;
+    const { detailShow } = this.state;
+
     return (
-      <div>
-        <Helmet>
-          <title>Solutions</title>
-          <meta name="description" content="Description of Solutions" />
-        </Helmet>
+      <article>
+        <div>
+        
         <Grid>
           <Row>
-            <Col xs={12} md={8}>
+            <Col md={4}>
               <ListGroup>
                 <ListGroupItem onClick={ () => { this.showSolutionDetail(this.solutionOne) }}>
                 Solution A
                   <Panel collapsible expanded={detailShow === this.solutionOne}>
-                    {detailContent1}
+                   detailContent1
                   </Panel>
                 </ListGroupItem>
                 <ListGroupItem onClick={ () => { this.showSolutionDetail(this.solutionTwo) }}>
                 Solution B
                   <Panel collapsible expanded={detailShow === this.solutionTwo}>
-                    {detailContent2}
+                    detailContent2
                   </Panel>
                 </ListGroupItem>
                 
               </ListGroup>
               
             </Col>
-            <Col xs={6} md={4}>
-                <div><SiteMapBox2 beforeData={} /></div>
-                <div></div>
-                <div><SiteMapBox2 afterData={} /></div>
+            <Col  xs={12} md={8} >
+                <SiteMapBox2 />
+
+                <Img className="solution-img" />
+
+                <SiteMapBox2 />
+
             </Col>
           </Row>
-        </Grid>
-      </div>
+        </Grid> 
+        
+        </div>
+      </article>
     );
   }
 }
 
 Solutions.propTypes = {
-  dispatch: PropTypes.func.isRequired,
+  onLoadSites: PropTypes.func,
+  sites: PropTypes.object,
+  // city: PropTypes.string,
+  // solutionParam: PropTypes.oneOfType([
+  //   PropTypes.string,
+  //   PropTypes.string,
+  // ]),
 };
 
-const mapStateToProps = createStructuredSelector({
-  solutions: makeSelectSolutions(),
-});
+Solutions.contextTypes = {
+  router: PropTypes.object
+};
 
-function mapDispatchToProps(dispatch) {
+export function mapDispatchToProps(dispatch) {
   return {
-    dispatch,
+    onloadSites: (city) => {
+      console.log("onLoadSites");
+      dispatch(sitesAction(city));
+      
+    },
+
+    onloadSolution: ({date,stype}) => {
+      dispatch(solutionAction({date,stype}));
+    }
+
   };
 }
+
+const mapStateToProps = createStructuredSelector({
+  sites: makeSelectSites(),
+  city: makeCity(),
+  solutionParam: makeSolutionParam(),
+});
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
 

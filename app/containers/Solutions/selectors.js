@@ -1,31 +1,36 @@
+/**
+ * Homepage selectors
+ */
+
 import { createSelector } from 'reselect';
 
-/**
- * Direct selector to the solutions state domain
- */
-const selectSolutionsDomain = (state) => state.get('solutions');
+const selectSolutions = (state) => state.get('solutions');
 
-/**
- * Other specific selectors
- */
-
-
-/**
- * Default selector used by Solutions
- */
-
-const makeSelectSolutions = () => createSelector(
-  selectSolutionsDomain,
-  (substate) => substate.toJS()
+const makeSelectUsername = () => createSelector(
+  selectSolutions,
+  (homeState) => homeState.get('username')
 );
 
-const selectSites = () => createSelector(
-	selectSolutionsDomain,
-	(substate) => substate.get("sites"),
+const makeSelectSites = () => createSelector(
+	selectSolutions,
+	(substate) => substate.get("sites")
 );
 
-export default makeSelectSolutions;
+const makeCity = () => createSelector(
+	selectSolutions,
+	(substate) => substate.get("city")
+)
+
+const makeSolutionParam = () => createSelector(
+	selectSolutions,
+	(substate) => {
+		return {date: substate.get("date"), stype: substate.get("stype")}
+	}
+);
+
 export {
-  selectSolutionsDomain,
-  selectSites,
+  selectSolutions,
+  makeSolutionParam,
+  makeSelectSites,
+  makeCity,
 };

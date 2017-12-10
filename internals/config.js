@@ -26,6 +26,8 @@ const Avis = {
         'cross-env',
         'express',
         'ip',
+        "pg",
+        "express-promise-router",
         'minimist',
         'sanitize.css',
       ],
