@@ -101,7 +101,7 @@ export class Solutions extends React.PureComponent { // eslint-disable-line reac
             <Col  xs={12} md={8} >
                 <SiteMapBox2 />
 
-                <Img className="solution-img" />
+                {this.solutionSource && <Img className="solution-img" />}
 
                 <SiteMapBox2 />
 
